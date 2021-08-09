@@ -1,5 +1,11 @@
 Test
 
+<button id='btn' type="button">X</button>
+
 <script>
-  window.parent.postMessage("hello there!");
+  window.btn.onclick = () => {
+    console.log("Test", window.parent);
+    window.parent.postMessage("hello there!");
+    console.log("Done");
+  }
 </script>
