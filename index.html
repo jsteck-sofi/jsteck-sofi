@@ -8,4 +8,20 @@ Test
     window.parent.postMessage("hello there!");
     console.log("Done");
   }
+
+  window.addEventListener('message', event => {
+    // IMPORTANT: check the origin of the data! 
+    if (event.origin.match(/https:\/\/kraken-dev-.*.sofitest.com/)) { 
+        // The data was sent from your site.
+        // Data sent with postMessage is stored in event.data:
+        console.log("Received:", event.data);
+        event.source.postMessage("Echo: "+event.data, event.origin);
+    } else {
+        // The data was NOT sent from your site! 
+        // Be careful! Do not use it. This else branch is
+        // here just for clarity, you usually shouldn't need it.
+        console.log("Untrusted post from parent", event.data);
+        return; 
+    } 
+}); 
 </script>
