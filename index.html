@@ -4,8 +4,8 @@ Test
 
 <script>
   window.btn.onclick = () => {
-    console.log("Test", window.parent);
-    window.parent.postMessage("hello there!", 'https://kraken-dev-384.sofitest.com/');
+    console.log("Test");
+    window.postMessage("hello there!", 'https://kraken-dev-384.sofitest.com/');
     console.log("Done");
   }
 
