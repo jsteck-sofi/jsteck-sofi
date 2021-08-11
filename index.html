@@ -43,8 +43,9 @@ Test
             sofiApi._connected = true;
 
             sofiApi._source = event.source;
+            sofiApi._origin = event.origin;
             // Reply with confirmation
-            event.source.postMessage({ type: 'CONFIRM_START' });
+            event.source.postMessage({ type: 'CONFIRM_START' }, sofiApi._origin);
           }
         } else {
             // The data was not sent from an allowedOrigin.
@@ -53,6 +54,7 @@ Test
       });
     },
     _source: null, // our parent frame that we're talking with
+    _origin: null, // origin of our parent frame that we're talking with
     _toSend: [], // queue of messages to send when we connect to the parent
     _send(obj) {
       debugger;
@@ -66,7 +68,7 @@ Test
       if (sofiApi._source) {
         // Send all queued messages
         while (sofiApi._toSend.length > 0) {
-          sofiApi._source.postMessage(sofiApi._toSend[0]);
+          sofiApi._source.postMessage(sofiApi._toSend[0], sofiApi._origin);
           sofiApi._toSend.shift(); // remove the object we sent
         }
       }
