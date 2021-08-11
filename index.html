@@ -9,19 +9,88 @@ Test
     console.log("Done");
   }
 
-  window.addEventListener('message', event => {
-    // IMPORTANT: check the origin of the data! 
-    if (event.origin.match(/https:\/\/kraken-dev-.*.sofitest.com/)) { 
-        // The data was sent from your site.
-        // Data sent with postMessage is stored in event.data:
-        console.log("Received:", event.data);
-        event.source.postMessage("Echo: "+event.data, event.origin);
-    } else {
-        // The data was NOT sent from your site! 
-        // Be careful! Do not use it. This else branch is
-        // here just for clarity, you usually shouldn't need it.
-        console.log("Untrusted post from parent", event.data);
-        return; 
-    } 
-}); 
+  /**
+   * Helper to communicate with sofi.
+   * 
+   * @example
+   * // Call this asap.
+   * sofiApi.startListening();
+   * 
+   * // Later, at any time.
+   * sofiApi.sendAddress("123 Post St, Santa Clara, CA, 94507");
+   * sofiApi.sendEstimatedCost(29241.43);
+   * sofiApi.sendDone();
+   * sofiApi.sendError("Could not do thing");
+   */
+  const sofiApi = {
+    _allowedOrigins: [
+      "https://sofi.com/",
+      /^https:\/\/kraken-dev-\d+\.sofitest\.com$/, // e.g. https://kraken-dev-23.sofitest.com/
+    ],
+    _isListening: false,
+    _connected: false,
+    startListening() {
+      if (sofiApi._isListening) return; // called multiple times?
+      sofiApi._isListening = true;
+
+      window.addEventListener('message', event => {
+        // If any of the allowedOrigins connect to us
+        if (sofiApi._allowedOrigins.some(o => event.origin.match(o))) {
+          if (event.data.type === "START") {
+            if (sofiApi._connected) return; // called multiple times?
+            sofiApi._connected = true;
+
+            sofiApi._source = event.source;
+            // Reply with confirmation
+            event.source.postMessage({ type: 'CONFIRM_START' });
+          }
+        } else {
+            // The data was not sent from an allowedOrigin.
+            return; 
+        }
+      });
+    },
+    _source: null, // our parent frame that we're talking with
+    _toSend: [], // queue of messages to send when we connect to the parent
+    _send(obj) {
+      // Keep a list of all the things to send in case we don't have a connection yet.
+      sofiApi._toSend.push(obj);
+
+      if (!sofiApi._isListening) {
+        throw new Error("Must call sofiApi.startListening() when the page loads and before we send anything.");
+      }
+
+      if (sofiApi._source) {
+        // Send all queued messages
+        while (sofiApi._toSend.length > 0) {
+          sofiApi._source.postMessage(sofiApi._toSend[0]);
+          sofiApi._toSend.shift(); // remove the object we sent
+        }
+      }
+    },
+    // ----------------------- Methods to Send info ----------------------- //
+    sendAddress(addressString) {
+      sofiApi._send({
+        type: 'ADDRESS',
+        payload: addressString,
+      });
+    },
+    sendEstimatedCost(costFloat) {
+      sofiApi._send({
+        type: 'ESTIMATED_COST',
+        payload: costFloat,
+      });
+    },
+    sendDone() {
+      sofiApi._send({
+        type: 'DONE',
+      });
+    },
+    sendError(errorString) {
+      sofiApi._send({
+        type: 'ERROR',
+        payload: errorString,
+      });
+    },
+  };
 </script>
