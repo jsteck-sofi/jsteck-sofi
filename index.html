@@ -30,12 +30,10 @@ Test
     _isListening: false,
     _connected: false,
     startListening() {
-      debugger;
       if (sofiApi._isListening) return; // called multiple times?
       sofiApi._isListening = true;
 
       window.addEventListener('message', event => {
-        debugger;
         // If any of the allowedOrigins connect to us
         if (sofiApi._allowedOrigins.some(o => event.origin.match(o))) {
           if (event.data.type === "START") {
@@ -57,7 +55,6 @@ Test
     _origin: null, // origin of our parent frame that we're talking with
     _toSend: [], // queue of messages to send when we connect to the parent
     _send(obj) {
-      debugger;
       // Keep a list of all the things to send in case we don't have a connection yet.
       sofiApi._toSend.push(obj);
 
@@ -74,6 +71,7 @@ Test
       }
     },
     // ----------------------- Methods to Send info ----------------------- //
+    // All data sent follows the { type: string, payload: any } format.
     sendAddress(addressString) {
       sofiApi._send({
         type: 'ADDRESS',
