@@ -5,7 +5,7 @@ Test
 <script>
   window.btn.onclick = () => {
     console.log("Test");
-    window.postMessage("hello there!", 'https://kraken-dev-384.sofitest.com/');
+    window.postMessage("hello there!", '*');
     console.log("Done");
   }
 
@@ -46,6 +46,7 @@ Test
             event.source.postMessage({ type: 'CONFIRM_START' }, sofiApi._origin);
           }
         } else {
+            console.log("Message was not from SoFi, it was from:", event.origin);
             // The data was not sent from an allowedOrigin.
             return; 
         }
