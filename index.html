@@ -22,6 +22,7 @@ X-Domain postMessage test
       sofiApi._isListening = true;
 
       window.addEventListener('message', event => {
+        debugger;
         // If any of the allowedOrigins connect to us
         if (sofiApi._allowedOrigins.some(o => event.origin.match(o))) {
           if (event.data.type === "START") {
