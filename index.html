@@ -13,7 +13,7 @@ X-Domain postMessage test
    */
   const sofiApi = {
     _allowedOrigins: [
-      "https://sofi.com",
+      "https://www.sofi.com",
       /^https:\/\/kraken-dev-\d+\.sofitest\.com$/, // e.g. https://kraken-dev-23.sofitest.com/
     ],
     _isListening: false,
@@ -22,7 +22,6 @@ X-Domain postMessage test
       sofiApi._isListening = true;
 
       window.addEventListener('message', event => {
-        debugger;
         // If any of the allowedOrigins connect to us
         if (sofiApi._allowedOrigins.some(o => event.origin.match(o))) {
           if (event.data.type === "START") {
