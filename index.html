@@ -1,5 +1,3 @@
-X-Domain postMessage test
-
 <script>
 
   /**
@@ -95,4 +93,28 @@ X-Domain postMessage test
   };
   sofiApi._startListening(); // called asap
 
+</script>
+
+<h1>
+  IFrame Api Example
+</h1>
+
+<div>
+  <input id="inputAddress" value="123 abc" /> <button id="btnAddress">Send Address</button>
+</div>
+<div>
+  <input id="inputEstimatedCost" value="567.30" /> <button id="btnEstimatedCost">Send EstimatedCost</button>
+</div>
+<div>
+  <input id="inputContinueApp" disabled /> <button id="btnContinueApp">Send ContinueApp</button>
+</div>
+<div>
+  <input id="inputError" value="big problem" /> <button id="btnError">Send Error</button>
+</div>
+
+<script>
+  btnAddress.onclick = () => sofiApi.sendAddress(window.inputAddress.value);
+  btnEstimatedCost.onclick = () => sofiApi.sendEstimatedCost(parseFloat(window.inputEstimatedCost.value));
+  btnContinueApp.onclick = () => sofiApi.sendContinueApp();
+  btnError.onclick = () => sofiApi.sendError(window.inputError.value);
 </script>
